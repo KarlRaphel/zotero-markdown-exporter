@@ -10,7 +10,7 @@ load_dotenv()
 output_dir = os.getenv("OUTPUT_DIR")
 def init_dirs():
     os.makedirs(output_dir, exist_ok=True)
-    for sub_dir in ['tags', 'journals', 'authors', 'papers', 'collections']:
+    for sub_dir in ['tags', 'journals', 'authors', 'papers', 'collections', 'collection_details']:
         if os.path.exists(f"{output_dir}/{sub_dir}"):
             shutil.rmtree(f"{output_dir}/{sub_dir}")
         os.makedirs(f"{output_dir}/{sub_dir}", exist_ok=True)
@@ -93,8 +93,11 @@ def dict_to_markdown(data, coll_dict):
     if file_url:
         md.append(f"**Zotero:** [Open]({file_url})")
 
-    for coll_name  in collections:
+    for coll_name in collections:
         open(f"{output_dir}/collections/{coll_name}.md", "a+").write(f"- [[{title}]]\n")
+
+    col_detail_list = collections
+
     collections = [f"[[{coll_name}]]" for coll_name in collections]
     md.append(f"**Collections:** {', '.join(collections)}")
 
@@ -122,6 +125,10 @@ def dict_to_markdown(data, coll_dict):
         md.append(unescape(abstract))
     res = '\n\n'.join(md)
     open(f"{output_dir}/papers/{title}.md", "w").write(res)
+
+    for col_detail in col_detail_list:
+        open(f"{output_dir}/collection_details/{col_detail}.md", "a+").write(res)
+        open(f"{output_dir}/collection_details/{col_detail}.md", "a+").write("\n\n---\n\n")
 
 
 def get_zotero_client():
