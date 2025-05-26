@@ -96,7 +96,7 @@ def dict_to_markdown(data, coll_dict):
     for coll_name in collections:
         open(f"{output_dir}/collections/{coll_name}.md", "a+").write(f"- [[{title}]]\n")
 
-    col_detail_list = collections
+    col_detail_list = [f"detail_{coll_name}" for coll_name in collections]
 
     collections = [f"[[{coll_name}]]" for coll_name in collections]
     md.append(f"**Collections:** {', '.join(collections)}")
