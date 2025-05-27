@@ -8,9 +8,16 @@ from html import unescape
 load_dotenv()
 
 output_dir = os.getenv("OUTPUT_DIR")
+
+llm_reader = None
+use_llm = os.getenv("USE_LLM", "false").lower() in ["true", "yes", "1"]
+if use_llm:
+    from llm_read import LLMReader
+    llm_reader = LLMReader()
+
 def init_dirs():
     os.makedirs(output_dir, exist_ok=True)
-    for sub_dir in ['tags', 'journals', 'authors', 'papers', 'collections', 'collection_details']:
+    for sub_dir in ['tags', 'journals', 'authors', 'papers', 'collections', 'series']:
         if os.path.exists(f"{output_dir}/{sub_dir}"):
             shutil.rmtree(f"{output_dir}/{sub_dir}")
         os.makedirs(f"{output_dir}/{sub_dir}", exist_ok=True)
@@ -59,9 +66,11 @@ def dict_to_markdown(data, coll_dict):
 
     try:
         file_url = data['links']['attachment']['href']
-        file_url = "zotero://open-pdf/library/items/" + file_url.split("/")[-1]
+        paper_id = file_url.split("/")[-1]
+        file_url = "zotero://open-pdf/library/items/" + paper_id
     except:
         file_url = ""
+        paper_id = ""
 
     d = data.get("data", {})
     full_title = d.get("title", "")
@@ -96,7 +105,7 @@ def dict_to_markdown(data, coll_dict):
     for coll_name in collections:
         open(f"{output_dir}/collections/{coll_name}.md", "a+").write(f"- [[{title}]]\n")
 
-    col_detail_list = [f"detail_{coll_name}" for coll_name in collections]
+    series_list = [f"{coll_name}_Series" for coll_name in collections]
 
     collections = [f"[[{coll_name}]]" for coll_name in collections]
     md.append(f"**Collections:** {', '.join(collections)}")
@@ -123,13 +132,19 @@ def dict_to_markdown(data, coll_dict):
     if abstract:
         md.append("\n**Abstract:**\n")
         md.append(unescape(abstract))
+
+    if use_llm and paper_id:
+        paper_text = llm_reader.get_summary(paper_id)
+        if paper_text:
+            md.append("\n**AI Summary:**\n")
+            md.append(paper_text)
+
     res = '\n\n'.join(md)
     open(f"{output_dir}/papers/{title}.md", "w").write(res)
 
-    for col_detail in col_detail_list:
-        open(f"{output_dir}/collection_details/{col_detail}.md", "a+").write(res)
-        open(f"{output_dir}/collection_details/{col_detail}.md", "a+").write("\n\n---\n\n")
-
+    open(f"{output_dir}/series/All_Series.md", "a+").write(res+"\n\n---\n\n")
+    for series in series_list:
+        open(f"{output_dir}/series/{series}.md", "a+").write(res+"\n\n---\n\n")
 
 def get_zotero_client():
     library_id = os.getenv("ZOTERO_LIBRARY_ID")
@@ -185,5 +200,6 @@ if __name__ == "__main__":
     for i, paper in enumerate(all_papers):
         print(f'[{i}/{paper_num}]', end='\r')
         if 'title' in paper["data"]:
+            print(f'[{i}/{paper_num}]\t{paper["data"]['title']}', end='\r')
             dict_to_markdown(paper, coll_dict)
     print(f'all {paper_num} papers processed')

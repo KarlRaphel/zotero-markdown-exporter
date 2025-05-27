@@ -26,7 +26,7 @@ cd zotero-markdown-exporter
 
 - **conda（科学计算推荐）**
   ```bash
-  conda create -n zotero-md python=3.10
+  conda create -n zotero-md python=3.12
   conda activate zotero-md
   ```
 
@@ -42,6 +42,12 @@ cd zotero-markdown-exporter
 
 ```bash
 pip install python-dotenv pyzotero
+```
+
+如果你需要使用 LLM 进行总结，你还需要额外安装以下依赖
+
+```bash
+pip install pypdf
 ```
 
 ---
@@ -60,6 +66,33 @@ cp .env.example .env
 OUTPUT_DIR=你想保存导出文献的目录
 ```
 
+如果需要使用 LLM 进行总结，你需要修改 `.env` 中以下字段：
+
+```env
+# 设置为true以启用LLM功能
+USE_LLM=true
+
+LLM_API_URL=https://api-inference.modelscope.cn/v1/chat/completions
+LLM_API_KEY=abcdef123456
+LLM_MODEL=Qwen/Qwen3-32B
+
+# 总结的语言，目前支持中文（zh）和英语（en）
+LLM_LANG=en
+
+# Zotero数据库的存储目录
+# pdf文件将从 “存储目录/论文ID/xxx.pdf” 中读取
+ZOTERO_STORAGE_DIR=/Users/pht/Zotero/storage
+```
+
+<details>
+
+<summary>点击展开注意事项</summary>
+
+1. 读取一篇论文需要消耗大量的 Token，请关注你的用量消耗。
+2. 一篇论文通常较长，请确保你使用的模型能够处理。默认使用的上下文长度为32k，如果你使用ollama等本地工具请进行配置。
+
+</details>
+
 ### 🔧 OUTPUT_DIR 示例结构
 
 导出后会生成如下目录结构（自动创建）：
@@ -70,7 +103,8 @@ OUTPUT_DIR/
 ├── journals/     # 按期刊组织文献
 ├── authors/      # 按作者组织文献
 ├── papers/       # 所有文献的 Markdown 文件
-└── collections/  # 按 Zotero 收藏夹组织文献
+├── collections/  # 按 Zotero 收藏夹组织文献
+└── series/       # 每个文件包含收藏夹下所有论文的详情内容，可以在与大模型对话时直接使用单个文件替代知识库
 ```
 
 ---

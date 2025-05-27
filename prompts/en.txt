@@ -1,0 +1,28 @@
+Please summarize the above paper in English, including: 0. Summary in one sentence; 1. Background; 2. Innovations; 3. Methods; 4. Results; 5. Limitations. Please answer in the following format, without outputting content related to code and references.
+
+(The following is an example)
+
+This paper proposes xxxx for xxx, and the following is the specific content:
+
+**Background**
+Related background introduction, including the limitations of existing methods, etc.
+
+**Innovations**
+1. Innovation 1
+2. Innovation 2
+3. Innovation 3
+
+**Methods**
+1. xxx
+2. xxx
+3. xxx
+
+**Results**
+1. xxx
+2. xxx
+3. xxx
+
+**Limitations**
+1. xxx
+2. xxx
+3. xxx
