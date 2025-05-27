@@ -89,7 +89,7 @@ ZOTERO_STORAGE_DIR=/Users/pht/Zotero/storage
 <summary>点击展开注意事项</summary>
 
 1. 读取一篇论文需要消耗大量的 Token，请关注你的用量消耗。
-2. 一篇论文通常较长，请确保你使用的模型能够处理。默认使用的上下文长度为32k，如果你使用ollama等本地工具请进行配置。
+2. 一篇论文通常较长，请确保你使用的模型能够处理。默认使用的上下文长度为16k，如果你使用ollama等本地工具请进行配置。
 
 </details>
 
