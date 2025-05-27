@@ -21,6 +21,7 @@ prompt = open(f'./prompts/{lang}.txt', 'r').read()
 
 
 def init_database():
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
     open(db_path, 'w').close()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
