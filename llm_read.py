@@ -45,8 +45,10 @@ def get_response(x):
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.4,
-        "max_tokens": 32000,
+        "max_tokens": 16384,
         "top_p": 1,
+        "enable_thinking": False,
+        "stream": False
    }
     response = requests.post(api_url, headers=headers, json=data)
     response = response.json()
@@ -62,22 +64,25 @@ def get_paper_text(id):
     paper_dir = f"{storage_dir}/{id}"
     files = os.listdir(paper_dir)
     pdf_files = [f for f in files if f.endswith(".pdf")]
-    if len(pdf_files) > 0:
-        pdf_file = pdf_files[0]
-        pdf_file = f"{paper_dir}/{pdf_file}"
-        reader = PdfReader(pdf_file)
-        for page in reader.pages:
-            paper_text += page.extract_text()
-        return paper_text
-    html_files = [f for f in files if f.endswith(".html")]
-    if len(html_files) > 0:
-        html_file = html_files[0]
-        html_file = f"{paper_dir}/{html_file}"
-        with open(html_file, 'r', encoding='utf-8') as f:
-            paper_text = f.read()
-        return paper_text
-    return ""
-        
+    try:
+        if len(pdf_files) > 0:
+            pdf_file = pdf_files[0]
+            pdf_file = f"{paper_dir}/{pdf_file}"
+            reader = PdfReader(pdf_file)
+            for page in reader.pages:
+                paper_text += page.extract_text()
+            return paper_text
+        html_files = [f for f in files if f.endswith(".html")]
+        if len(html_files) > 0:
+            html_file = html_files[0]
+            html_file = f"{paper_dir}/{html_file}"
+            with open(html_file, 'r', encoding='utf-8') as f:
+                paper_text = f.read()
+            return paper_text
+        return ""
+    except:
+        return ""
+
 
 
 class LLMReader:

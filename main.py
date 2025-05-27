@@ -142,9 +142,10 @@ def dict_to_markdown(data, coll_dict):
     res = '\n\n'.join(md)
     open(f"{output_dir}/papers/{title}.md", "w").write(res)
 
-    open(f"{output_dir}/series/All_Series.md", "a+").write(res+"\n\n---\n\n")
+    res = res.replace("[", "").replace("]", "")+"\n\n---\n\n"
+    open(f"{output_dir}/series/All_Series.md", "a+").write(res)
     for series in series_list:
-        open(f"{output_dir}/series/{series}.md", "a+").write(res+"\n\n---\n\n")
+        open(f"{output_dir}/series/{series}.md", "a+").write(res)
 
 def get_zotero_client():
     library_id = os.getenv("ZOTERO_LIBRARY_ID")
