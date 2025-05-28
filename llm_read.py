@@ -9,14 +9,18 @@ load_dotenv()
 api_url = os.getenv("LLM_API_URL")
 api_key = os.getenv("LLM_API_KEY")
 model = os.getenv("LLM_MODEL")
-lang = os.getenv("LLM_LANG")
+lang = os.getenv("LLM_LANG", 'zh')
+
+max_tokens = os.getenv("LLM_MAX_TOKENS", 16384)
+max_tokens = int(max_tokens)
+temperature = os.getenv("LLM_TEMPERATURE", 0.4)
+temperature = float(temperature)
+top_p = os.getenv("LLM_TOP_P", 1)
+top_p = float(top_p)
 
 storage_dir = os.getenv("ZOTERO_STORAGE_DIR")
 
-lang = os.getenv("LLM_LANG", 'zh')
-
 db_path = f'./data/llm_{lang}.db'
-
 prompt = open(f'./prompts/{lang}.txt', 'r').read()
 
 
@@ -45,9 +49,9 @@ def get_response(x):
             {"role": "user", "content": x},
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.4,
-        "max_tokens": 16384,
-        "top_p": 1,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "top_p": top_p,
         "enable_thinking": False,
         "stream": False
    }
